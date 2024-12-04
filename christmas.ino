@@ -8,11 +8,17 @@ Lighting for Christmas. 9 channels
    1  2 3 4 5 6 7 8 9
       
 */
+
 int LED[] = {3,4,5,6,7,8,9,10,11};
+
 int LEDMain = 2;
+int photoCell = A0;
+
+int phc_value;
 
 void setup() {
   int i;
+  //pinMode(photoCell, INPUT);
   for (i=0; i<9; i++) {
     pinMode(LED[i], OUTPUT);
   }
@@ -100,8 +106,10 @@ void blink3(int sleepTime) {
   for (i=0 ; i<5; i++) {
     digitalWrite(LED[i], HIGH);
     digitalWrite(LED[8-i], HIGH);
+    if (i>0) {
     digitalWrite(LED[i-1], LOW);
     digitalWrite(LED[9-i], LOW);
+    }
     delay(sleepTime);
   }
     for (i=3 ; i>0; i--) {
@@ -189,9 +197,62 @@ void blink5(int sleepTime) {
 
 }
 
+void blink6(int sleepTime) {
+
+  int arraySize = 9;
+  int items[arraySize] = {0,1,2,3,4,5,6,7,8};
+
+  randomSeed(analogRead(0));
+
+  for (int i = arraySize -1; i>0; i--) {
+    int j = random(0, i+1);
+    int temp = items[i];
+    items[i] = items[j];
+    items[j] = temp;
+  }
+
+  for (int i=0; i< arraySize; i++) {
+     digitalWrite(LED[items[i]], HIGH);
+     if (digitalRead(LEDMain) == HIGH){
+      digitalWrite(LEDMain, LOW);
+     }
+     else {digitalWrite(LEDMain, HIGH);}
+     delay(sleepTime);
+     items[i] = -1;
+  }
+
+  
+  int items_clear[arraySize] = {0,1,2,3,4,5,6,7,8};
+  
+  for (int i = arraySize -1; i>0; i--) {
+    int j = random(0, i+1);
+    int temp = items_clear[i];
+    items_clear[i] = items_clear[j];
+    items_clear[j] = temp;
+  }
+
+  for (int i=0; i< arraySize; i++) {
+     digitalWrite(LED[items_clear[i]], LOW);
+     if (digitalRead(LEDMain) == HIGH){
+      digitalWrite(LEDMain, LOW);
+     }
+     else {digitalWrite(LEDMain, HIGH);}
+     delay(sleepTime);
+     items_clear[i] = -1;
+  }
+
+
+}
+
 void loop() {
   
   int l;
+  //phc_value = analogRead(photoCell);
+  phc_value = 22;
+ 
+  if (phc_value<25)
+ 
+ {
   
   turnoff();
   for (l=0; l<3; l++){
@@ -214,7 +275,12 @@ void loop() {
     blink4(500);
   }
   
-
   turnoff();
   blink5(80);
+  
+  for (l=0; l<3; l++) {
+      turnoff();
+      blink6(500);
+  }
+ }
 }
